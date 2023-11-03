@@ -8,21 +8,7 @@ namespace LAB10
     internal class Program
     {
         static void Main(string[] args)
-        {
-
-            // CREATE A MENU
-
-            // OPTIONS: 
-            // 1 GET ALL CUSTOMERS 
-            // SHOW COMPANYNAME, COUNTRY, REGION, PHONE NUMBER AND NUMBER OF ORDERS THEY HAVE
-            // 2 CHOOSE A SPECIFIC CUSTOMER IN THE LIST.
-            // ALL FIELDS FOR THE CUSTOMER SHOULD SHOW AND A LIST OF ALL ORDERS THEY HAVE PLACED
-            // 3 ADD A CUSTOMER
-            // USER SHOULD BE ABLE TO ADD A CUSTOMER AND ENTER ALL DATA FOR EACH COLUMN
-            // IF USER DOESN'T ENTER A VALUE, NULL WILL BE SENT TO THE DATABASE, NOT AN EMPTY STRING
-
-
-            
+        {           
             while (true)
             {
                 // Show user options and take input from user
