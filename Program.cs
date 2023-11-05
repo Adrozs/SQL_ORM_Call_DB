@@ -110,40 +110,56 @@ namespace LAB10
 
             using (NorthWindContext context = new NorthWindContext())
             {
-                var customer = context.Customers
-                    .Include(c => c.Orders)
-                        .ThenInclude(o => o.OrderDetails)
-                            .ThenInclude(od => od.Product)
-                    .Where(c => c.CompanyName == name)
-                    .Single();
-                    
-                // Print out all information about the customer 
-                Console.WriteLine($"Company: {customer.CompanyName}");
-                Console.WriteLine($"Contact: {customer.ContactName}");
-                Console.WriteLine($"Contact title: {customer.ContactTitle}");
-                Console.WriteLine($"Address: {customer.Address}");
-                Console.WriteLine($"City: {customer.City}");
-                Console.WriteLine($"Region: {customer.Region}");
-                Console.WriteLine($"Postal code: {customer.PostalCode}");
-                Console.WriteLine($"Country: {customer.Country}");
-                Console.WriteLine($"Phone: {customer.Phone}");
-                Console.WriteLine($"Fax: {customer.Fax}");
-                Console.WriteLine();
-                Console.WriteLine("Orders:");
-
-                // Loop through and print out all the customers orders
-                foreach (var order in customer.Orders)
+                try
                 {
-                    // Print out order id and date ordered
-                    Console.WriteLine($" Order: {order.OrderId}");
-                    Console.WriteLine($" Date ordered: {order.OrderDate}");
+                    var customer = context.Customers
+                        .Include(c => c.Orders)
+                            .ThenInclude(o => o.OrderDetails)
+                                .ThenInclude(od => od.Product)
+                        .SingleOrDefault(c => c.CompanyName == name);
 
-                    // Print out all the products and their price in said order
-                    foreach (var orderDetail in order.OrderDetails)
+                    // If customer was found in the database, continue with printing out info
+                    if (customer != null)
                     {
-                        Console.WriteLine($" Product: {orderDetail.Product.ProductName} | Unit price: {orderDetail.Product.UnitPrice}");
+                        // Print out all information about the customer 
+                        Console.WriteLine($"Company: {customer.CompanyName}");
+                        Console.WriteLine($"Contact: {customer.ContactName}");
+                        Console.WriteLine($"Contact title: {customer.ContactTitle}");
+                        Console.WriteLine($"Address: {customer.Address}");
+                        Console.WriteLine($"City: {customer.City}");
+                        Console.WriteLine($"Region: {customer.Region}");
+                        Console.WriteLine($"Postal code: {customer.PostalCode}");
+                        Console.WriteLine($"Country: {customer.Country}");
+                        Console.WriteLine($"Phone: {customer.Phone}");
+                        Console.WriteLine($"Fax: {customer.Fax}");
+                        Console.WriteLine();
+                        Console.WriteLine("Orders:");
+
+                        // Loop through and print out all the customers orders
+                        foreach (var order in customer.Orders)
+                        {
+                            // Print out order id and date ordered
+                            Console.WriteLine($" Order: {order.OrderId}");
+                            Console.WriteLine($" Date ordered: {order.OrderDate}");
+
+                            // Print out all the products and their price in said order
+                            foreach (var orderDetail in order.OrderDetails)
+                            {
+                                Console.WriteLine($" Product: {orderDetail.Product.ProductName} | Unit price: {orderDetail.Product.UnitPrice}");
+                            }
+                            Console.WriteLine();
+                        }
                     }
-                    Console.WriteLine();
+                    // If customer wasn't found in the database print out error message
+                    else
+                    {
+                        Console.WriteLine("Could not find customer");
+                    }
+                }
+                // If there was multiple customers found in the database print out error message
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
         }
