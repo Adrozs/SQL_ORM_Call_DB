@@ -8,35 +8,32 @@ namespace LAB10
     internal class Program
     {
         static void Main(string[] args)
-        {
-
-            // CREATE A MENU
-
-            // OPTIONS: 
-            // 1 GET ALL CUSTOMERS 
-            // SHOW COMPANYNAME, COUNTRY, REGION, PHONE NUMBER AND NUMBER OF ORDERS THEY HAVE
-            // 2 CHOOSE A SPECIFIC CUSTOMER IN THE LIST.
-            // ALL FIELDS FOR THE CUSTOMER SHOULD SHOW AND A LIST OF ALL ORDERS THEY HAVE PLACED
-            // 3 ADD A CUSTOMER
-            // USER SHOULD BE ABLE TO ADD A CUSTOMER AND ENTER ALL DATA FOR EACH COLUMN
-            // IF USER DOESN'T ENTER A VALUE, NULL WILL BE SENT TO THE DATABASE, NOT AN EMPTY STRING
-
-
-            
+        {           
             while (true)
             {
                 // Show user options and take input from user
                 Console.WriteLine("Menu");
-                Console.WriteLine("1: Show all customers");
-                Console.WriteLine("2: Choose specific customer");
-                Console.WriteLine("3: Add customer");
+                Console.WriteLine("[1]: Show all customers ASC/DESC");
+                Console.WriteLine("[2]: Choose specific customer");
+                Console.WriteLine("[3]: Add customer");
                 string input = Console.ReadLine();
            
                 // Call applicable method depending on users choice
                 switch (input)
                 {
                     case "1":
-                        ShowAllCustomers();
+                        string sortingOrder = null;
+
+                        // Re-promts user until sortingOrder is either ASC or DESC
+                        while (sortingOrder != "ASC" && sortingOrder != "DESC")
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Acsending or descending order?");
+                            Console.Write("[ASC/DESC]:");
+                            sortingOrder = Console.ReadLine().ToUpper();
+                        }
+                        
+                        ShowAllCustomers(sortingOrder);
                         break;
                     case "2":
                         ChooseCustomer();
@@ -53,22 +50,40 @@ namespace LAB10
         }
 
         // Prints out all customers name, country, region, number and amount of orders
-        static void ShowAllCustomers()
+        static void ShowAllCustomers(string sortingOrder)
         {
             using (NorthWindContext context = new NorthWindContext())
             {
-                var customers = context.Customers
-                    .Select(c => new {ShippedDate = c.Orders.Select(o => o.ShippedDate), c.CompanyName, c.Country, c.Region, c.Phone, OrderCount = c.Orders.Count() })
-                    .ToList();
 
+                // Define initial query to get sorted later
+                var query = context.Customers
+                    .Select(c => new { ShippedDate = c.Orders.Select(o => o.ShippedDate), c.CompanyName, c.Country, c.Region, c.Phone, OrderCount = c.Orders.Count() });
+
+
+                // Chooses how to order the list depending on users choice
+                if (sortingOrder == "ASC")
+                {
+                    query = query.OrderBy(q => q.CompanyName);
+                }
+                else
+                {
+                    query = query.OrderByDescending(q => q.CompanyName);
+                }
+
+                // Runs query and saves it to customers
+                var customers = query.ToList();
+              
+                // Iterates over each customer and prints out all their info along with how many orders they have shipped and not shipped
                 foreach (var customer in customers)
                 {
                     int ordersShipped = 0;
                     int ordersNotShipped = 0;
 
-                    foreach (var date in customer.ShippedDate)
+                    // All orders that are shipped have a date and those that don't aren't shipped
+                    // So we simplu check if date is null or not and and add 1 to respective variable
+                    foreach (var shipDate in customer.ShippedDate)
                     {
-                        if (date == null)
+                        if (shipDate == null)
                         {
                             ordersNotShipped++;
                         }
