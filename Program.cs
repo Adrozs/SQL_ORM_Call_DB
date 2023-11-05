@@ -13,9 +13,10 @@ namespace LAB10
             {
                 // Show user options and take input from user
                 Console.WriteLine("Menu");
-                Console.WriteLine("[1]: Show all customers ASC/DESC");
+                Console.WriteLine("[1]: Show all customers");
                 Console.WriteLine("[2]: Choose specific customer");
                 Console.WriteLine("[3]: Add customer");
+                Console.WriteLine("[4]: Exit program");
                 string input = Console.ReadLine();
            
                 // Call applicable method depending on users choice
@@ -40,6 +41,9 @@ namespace LAB10
                         break;
                     case "3":
                         AddCustomer();
+                        break;
+                    case "4":
+                        Environment.Exit(0);
                         break;
                     default:
                         Console.WriteLine("Invalid input");
@@ -80,7 +84,7 @@ namespace LAB10
                     int ordersNotShipped = 0;
 
                     // All orders that are shipped have a date and those that don't aren't shipped
-                    // So we simplu check if date is null or not and and add 1 to respective variable
+                    // So we simply check if date is null or not and and add 1 to respective variable
                     foreach (var shipDate in customer.ShippedDate)
                     {
                         if (shipDate == null)
@@ -193,6 +197,7 @@ namespace LAB10
                 Console.Write($"Fax: ");
                 string fax = Console.ReadLine();
 
+                // Create new customer
                 Customer customer = new Customer()
                 {
                     // Checks if user entered values are null or not and saves
@@ -212,6 +217,7 @@ namespace LAB10
 
                 };
                 
+                // Save to database
                 context.Customers.Add(customer);
                 context.SaveChanges();
             }
@@ -222,7 +228,6 @@ namespace LAB10
                 if (string.IsNullOrEmpty(value))
                 {
                     return null;
-                   
                 }
                 else
                 {
